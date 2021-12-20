@@ -2,42 +2,182 @@
   <div class="login">
     <div class="content">
       <div class="headline">Регистрация</div>
-      <div class="form">
-      <v-text-field
-            label="Email"
-            outlined
-          ></v-text-field>
-          <v-text-field
-            label="Пароль"
-            outlined
-            :type="show ? 'text' : 'password'"
-            :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
-            @click:append="show = !show"
-          ></v-text-field>
+      <validation-observer
+        ref="validationObserver"
+        v-slot="{ invalid }"
+      >
+        <form class="form">
+          <validation-provider
+            v-slot="{ errors }"
+            name="Email"
+            rules="required|email"
+          >
+            <v-text-field
+              label="Email"
+              v-model="email"
+              outlined
+              required
+              :error-messages="errors"
+              >
+            </v-text-field>
+          </validation-provider>
           
+          <validation-provider
+            v-slot="{ errors }"
+            name="FirstName"
+            rules="required"
+          >
+            <v-text-field
+              label="Имя"
+              v-model="firstName"
+              outlined
+              required
+              :error-messages="errors">
+            </v-text-field>
+          </validation-provider>
+          
+          <validation-provider
+            v-slot="{ errors }"
+            name="LastName"
+            rules="required"
+          >
+            <v-text-field
+              label="Фамилия"
+              v-model="lastName"
+              outlined
+              required
+              :error-messages="errors">
+            </v-text-field>
+          </validation-provider>
+          
+          <validation-observer>
+            <validation-provider
+              v-slot="{ errors }"
+              name="Password"
+              :rules="{
+                min: 8,
+                required: true,
+                regex: '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*_-])'
+              }"
+            >
+              <v-text-field
+                label="Пароль"
+                outlined
+                :type="show ? 'text' : 'password'"
+                :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
+                @click:append="show = !show"
+                v-model="password"
+                required
+                :error-messages="errors">
+              </v-text-field>
+            </validation-provider>
+          
+            <validation-provider
+              v-slot="{ errors }"
+              name="PasswordConfirm"
+              rules="min:8|required|password:@Password"
+            >
+              <v-text-field
+                label="Повтор пароля"
+                outlined
+                :type="show ? 'text' : 'password'"
+                :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
+                @click:append="show = !show"
+                v-model="confirmPassword"
+                required
+                :error-messages="errors">
+              </v-text-field>
+            </validation-provider>
+          </validation-observer>
+            
           <v-btn
             color="primary"
             elevation="2"
             class="rounded-pill mt-3"
-            block
-          >Зарегистрироваться</v-btn>
-      </div>
+            :disabled="invalid"
+            @click="handleSignupClick"
+            block>
+            Зарегистрироваться
+          </v-btn>
+        </form>
+      </validation-observer>
     </div>
+    <v-snackbar
+      v-model="snackbar"
+      timeout="2000"
+      color="success"
+      rounded="lg"
+    >
+      Текст
+    </v-snackbar>
   </div>
 </template>
 
 <script>
-// import { Notification } from 'electron'
-// const { Notification } = require('electron');
+  import { required, email, min, regex } from 'vee-validate/dist/rules'
+  import { extend, ValidationObserver, ValidationProvider, setInteractionMode } from 'vee-validate'
 
-export default {
-  name: 'Signup',
-  data: () => ({
-    show: false,
-  }),
-  methods: {
-  },
-}
+  setInteractionMode('eager');
+
+  extend('password', {
+    params: ['target'],
+    validate(value, { target }) {
+      return value === target;
+    },
+    message: 'Пароли не совпадают'
+  });
+
+  extend('required', {
+    ...required,
+    message: 'Это поле обязательно'
+  });
+
+  extend('email', {
+    ...email,
+    message: 'Неверный формат email'
+  });
+
+  extend('min', {
+    ...min,
+    message: 'Минимальная длина пароля - {length} символов'
+  });
+
+
+  extend('regex', {
+    ...regex,
+    message: 'Пароль не удовлетворяет условию'
+  })
+
+  export default {
+    name: 'Signup',
+    data: () => ({
+      show: false,
+      email: '',
+      firstName: '',
+      lastName: '',
+      password: '',
+      confirmPassword: '',
+      snackbar: false,
+    }),
+    methods: {
+      handleSignupClick() {
+        this.$refs.validationObserver.validate();
+        console.log({
+          email: this.email,
+          firstName: this.firstName,
+          lastName: this.lastName,
+          password: this.password,
+        });
+        this.snackbar = true;
+      } 
+    },
+    components: {
+      // eslint-disable-next-line
+      ValidationObserver,
+      ValidationProvider
+    },
+    
+  }
 </script>
 
 

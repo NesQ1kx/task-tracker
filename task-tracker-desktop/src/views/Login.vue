@@ -41,8 +41,9 @@ export default {
     hanldeSignupClick() {
       this.$router.push({ name: 'Signup' });
     },
-    handleLoginClick() {
-
+    async handleLoginClick() {
+      console.log(process.env);
+      await this.$http.get('/posts')
     }
   }
 }
