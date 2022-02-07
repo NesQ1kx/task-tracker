@@ -1,0 +1,7 @@
+const SET_LOADING = 'SET_LOADING';
+const SET_SNACKBAR = 'SET_SNACKBAR'
+
+export default {
+  SET_LOADING,
+  SET_SNACKBAR,
+}

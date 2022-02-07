@@ -1,3 +1,3 @@
 export interface ISuccessLogin {
-  accessToken: string;
+  authToken: string;
 }

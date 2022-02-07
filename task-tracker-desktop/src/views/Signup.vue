@@ -102,82 +102,88 @@
         </form>
       </validation-observer>
     </div>
-    <v-snackbar
-      v-model="snackbar"
-      timeout="2000"
-      color="success"
-      rounded="lg"
-    >
-      Текст
-    </v-snackbar>
   </div>
 </template>
 
 <script>
-  import { required, email, min, regex } from 'vee-validate/dist/rules'
-  import { extend, ValidationObserver, ValidationProvider, setInteractionMode } from 'vee-validate'
+import { required, email, min, regex } from 'vee-validate/dist/rules';
+import { extend, ValidationObserver, ValidationProvider, setInteractionMode } from 'vee-validate';
+import mutations from '@/store/mutations';
+import actions from '@/store/actions';
 
-  setInteractionMode('eager');
+setInteractionMode('eager');
 
-  extend('password', {
-    params: ['target'],
-    validate(value, { target }) {
-      return value === target;
-    },
-    message: 'Пароли не совпадают'
-  });
+extend('password', {
+  params: ['target'],
+  validate(value, { target }) {
+    return value === target;
+  },
+  message: 'Пароли не совпадают'
+});
 
-  extend('required', {
-    ...required,
-    message: 'Это поле обязательно'
-  });
+extend('required', {
+  ...required,
+  message: 'Это поле обязательно'
+});
 
-  extend('email', {
-    ...email,
-    message: 'Неверный формат email'
-  });
+extend('email', {
+  ...email,
+  message: 'Неверный формат email'
+});
 
-  extend('min', {
-    ...min,
-    message: 'Минимальная длина пароля - {length} символов'
-  });
+extend('min', {
+  ...min,
+  message: 'Минимальная длина пароля - {length} символов'
+});
 
 
-  extend('regex', {
-    ...regex,
-    message: 'Пароль не удовлетворяет условию'
-  })
+extend('regex', {
+  ...regex,
+  message: 'Пароль не удовлетворяет условию'
+})
 
-  export default {
-    name: 'Signup',
-    data: () => ({
-      show: false,
-      email: '',
-      firstName: '',
-      lastName: '',
-      password: '',
-      confirmPassword: '',
-      snackbar: false,
-    }),
-    methods: {
-      handleSignupClick() {
-        this.$refs.validationObserver.validate();
-        console.log({
+export default {
+  name: 'Signup',
+  data: () => ({
+    show: false,
+    email: '',
+    firstName: '',
+    lastName: '',
+    password: '',
+    confirmPassword: '',
+    snackbar: false,
+  }),
+  methods: {
+    async handleSignupClick() {
+      this.$refs.validationObserver.validate();
+      
+      try {
+        this.$store.commit(mutations.SET_LOADING, { value: true });
+        const response = await this.$http.post('auth/signup', {
           email: this.email,
           firstName: this.firstName,
           lastName: this.lastName,
           password: this.password,
         });
-        this.snackbar = true;
-      } 
-    },
-    components: {
-      // eslint-disable-next-line
-      ValidationObserver,
-      ValidationProvider
-    },
-    
-  }
+        this.$store.commit(mutations.SET_LOADING, { value: false });
+        localStorage.setItem('authToken', response.data.authToken);
+        this.$router.push({ name: 'Otp' });
+
+      } catch (e) {
+        this.$store.dispatch(actions.SET_SNACKBAR, {
+          status: 'error',
+          code: e.response.data.statusCode,
+        });
+        this.$store.commit(mutations.SET_LOADING, { value: false });
+      }
+    } 
+  },
+  components: {
+    // eslint-disable-next-line
+    ValidationObserver,
+    ValidationProvider
+  },
+}
 </script>
 
 

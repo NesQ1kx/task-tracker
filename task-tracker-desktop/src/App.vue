@@ -3,7 +3,9 @@
     <v-main >
       <div class="blue lighten-4" style="height: 100%">
         <NavigationButtons />
+        <Progress />
         <router-view/>
+        <SnackBar />
       </div>
     </v-main>
   </v-app>
@@ -11,6 +13,9 @@
 
 <script>
 import NavigationButtons from '@/components/NavigationButtons';
+import Progress from '@/components/Progress';
+import SnackBar from '@/components/SnackBar';
+
 
 export default {
   name: 'App',
@@ -20,6 +25,8 @@ export default {
   }),
   components: {
     NavigationButtons,
+    Progress,
+    SnackBar
   }
 };
 </script>

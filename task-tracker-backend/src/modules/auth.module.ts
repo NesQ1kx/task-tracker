@@ -6,6 +6,7 @@ import { AuthService } from 'src/services/auth.service';
 import { JwtStrategy } from 'src/strategies/jwt.strategy';
 import { UserModule } from './user.module';
 import * as dotenv from 'dotenv';
+import { MailModule } from './mail.module';
 dotenv.config();
 
 @Module({
@@ -18,6 +19,7 @@ dotenv.config();
       }
     }),
     UserModule,
+    MailModule
   ],
   controllers: [AuthContrloller],
   providers: [JwtStrategy, AuthService],

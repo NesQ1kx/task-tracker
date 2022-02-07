@@ -1,0 +1,6 @@
+export enum StatusCodes {
+  USER_EXIST = 400.1,
+  SIGNUP_SUCCESS = 200.1,
+  CONFIRM_SUCESS = 200.2,
+  INVALID_CONFIRMATION_CODE = 400.2,
+}
