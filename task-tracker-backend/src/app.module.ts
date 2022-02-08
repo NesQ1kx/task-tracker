@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './modules/auth.module';
+import { AppGateway } from './services/events.gateway';
 
 @Module({
   imports: [
@@ -9,6 +10,6 @@ import { AuthModule } from './modules/auth.module';
     AuthModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [AppGateway],
 })
 export class AppModule {}
