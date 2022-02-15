@@ -32,6 +32,7 @@
     "@nestjs/platform-socket.io": "^8.2.6",
     "@nestjs/websockets": "^8.2.6",
     "@types/socket.io": "^3.0.2",
+    "airgram": "^5.0.0",
     "bcrypt": "^5.0.1",
     "mongoose": "^6.1.2",
     "nodemailer": "^6.7.2",

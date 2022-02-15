@@ -2,10 +2,7 @@
   <div class="login">
     <div class="content">
       <div class="headline">Регистрация</div>
-      <validation-observer
-        ref="validationObserver"
-        v-slot="{ invalid }"
-      >
+      <validation-observer ref="validationObserver" v-slot="{ invalid }">
         <form class="form">
           <validation-provider
             v-slot="{ errors }"
@@ -18,10 +15,10 @@
               outlined
               required
               :error-messages="errors"
-              >
+            >
             </v-text-field>
           </validation-provider>
-          
+
           <validation-provider
             v-slot="{ errors }"
             name="FirstName"
@@ -32,10 +29,11 @@
               v-model="firstName"
               outlined
               required
-              :error-messages="errors">
+              :error-messages="errors"
+            >
             </v-text-field>
           </validation-provider>
-          
+
           <validation-provider
             v-slot="{ errors }"
             name="LastName"
@@ -46,10 +44,11 @@
               v-model="lastName"
               outlined
               required
-              :error-messages="errors">
+              :error-messages="errors"
+            >
             </v-text-field>
           </validation-provider>
-          
+
           <validation-observer>
             <validation-provider
               v-slot="{ errors }"
@@ -57,7 +56,8 @@
               :rules="{
                 min: 8,
                 required: true,
-                regex: '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*_-])'
+                regex:
+                  '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*_-])',
               }"
             >
               <v-text-field
@@ -68,10 +68,11 @@
                 @click:append="show = !show"
                 v-model="password"
                 required
-                :error-messages="errors">
+                :error-messages="errors"
+              >
               </v-text-field>
             </validation-provider>
-          
+
             <validation-provider
               v-slot="{ errors }"
               name="PasswordConfirm"
@@ -85,18 +86,20 @@
                 @click:append="show = !show"
                 v-model="confirmPassword"
                 required
-                :error-messages="errors">
+                :error-messages="errors"
+              >
               </v-text-field>
             </validation-provider>
           </validation-observer>
-            
+
           <v-btn
             color="primary"
             elevation="2"
             class="rounded-pill mt-3"
             :disabled="invalid"
             @click="handleSignupClick"
-            block>
+            block
+          >
             Зарегистрироваться
           </v-btn>
         </form>
@@ -106,86 +109,88 @@
 </template>
 
 <script>
-import { required, email, min, regex } from 'vee-validate/dist/rules';
-import { extend, ValidationObserver, ValidationProvider, setInteractionMode } from 'vee-validate';
-import mutations from '@/store/mutations';
-import actions from '@/store/actions';
+import { required, email, min, regex } from "vee-validate/dist/rules";
+import {
+  extend,
+  ValidationObserver,
+  ValidationProvider,
+  setInteractionMode,
+} from "vee-validate";
+import mutations from "@/store/mutations";
+import actions from "@/store/actions";
 
-setInteractionMode('eager');
+setInteractionMode("eager");
 
-extend('password', {
-  params: ['target'],
+extend("password", {
+  params: ["target"],
   validate(value, { target }) {
     return value === target;
   },
-  message: 'Пароли не совпадают'
+  message: "Пароли не совпадают",
 });
 
-extend('required', {
+extend("required", {
   ...required,
-  message: 'Это поле обязательно'
+  message: "Это поле обязательно",
 });
 
-extend('email', {
+extend("email", {
   ...email,
-  message: 'Неверный формат email'
+  message: "Неверный формат email",
 });
 
-extend('min', {
+extend("min", {
   ...min,
-  message: 'Минимальная длина пароля - {length} символов'
+  message: "Минимальная длина пароля - {length} символов",
 });
 
-
-extend('regex', {
+extend("regex", {
   ...regex,
-  message: 'Пароль не удовлетворяет условию'
-})
+  message: "Пароль не удовлетворяет условию",
+});
 
 export default {
-  name: 'Signup',
+  name: "Signup",
   data: () => ({
     show: false,
-    email: '',
-    firstName: '',
-    lastName: '',
-    password: '',
-    confirmPassword: '',
+    email: "",
+    firstName: "",
+    lastName: "",
+    password: "",
+    confirmPassword: "",
     snackbar: false,
   }),
   methods: {
     async handleSignupClick() {
       this.$refs.validationObserver.validate();
-      
+
       try {
         this.$store.commit(mutations.SET_LOADING, { value: true });
-        const response = await this.$http.post('auth/signup', {
+        const response = await this.$http.post("auth/signup", {
           email: this.email,
           firstName: this.firstName,
           lastName: this.lastName,
           password: this.password,
         });
         this.$store.commit(mutations.SET_LOADING, { value: false });
-        localStorage.setItem('authToken', response.data.authToken);
-        this.$router.push({ name: 'Otp' });
-
+        localStorage.setItem("authToken", response.data.authToken);
+        this.$router.push({ name: "Otp" });
       } catch (e) {
         this.$store.dispatch(actions.SET_SNACKBAR, {
-          status: 'error',
+          status: "error",
           code: e.response.data.statusCode,
         });
         this.$store.commit(mutations.SET_LOADING, { value: false });
       }
-    } 
+    },
   },
   components: {
     // eslint-disable-next-line
     ValidationObserver,
-    ValidationProvider
+    ValidationProvider,
   },
-}
+};
 </script>
-
 
 <style lang="scss">
 .login {

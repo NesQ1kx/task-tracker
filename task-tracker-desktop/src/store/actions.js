@@ -1,5 +1,7 @@
-const SET_SNACKBAR = 'SET_SNACKBAR'
+const SET_SNACKBAR = "SET_SNACKBAR";
+const GET_USER_DATA = "GET_USER_DATA";
 
 export default {
   SET_SNACKBAR,
-}
+  GET_USER_DATA,
+};

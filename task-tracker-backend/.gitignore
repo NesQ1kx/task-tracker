@@ -1,6 +1,9 @@
 # compiled output
 /dist
 /node_modules
+/cmake
+/db
+/pkgconfig
 .env
 
 # Logs

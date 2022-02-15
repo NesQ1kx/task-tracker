@@ -1,9 +1,9 @@
-import { Injectable } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
-import { CreateUserDto } from "src/dto/create-user.dto";
-import { User, UserDocument } from "src/schemas/user.schema";
-import * as bcrypt from "bcrypt";
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { CreateUserDto } from 'src/dto/create-user.dto';
+import { User, UserDocument } from 'src/schemas/user.schema';
+import * as bcrypt from 'bcrypt';
 
 const SALT_OR_ROUNDS = 10;
 @Injectable()
@@ -22,8 +22,20 @@ export class UserService {
     return !!user;
   }
 
-  private async generateHash(password: string): Promise<string> {
+  public async getUserByEmail(email: string): Promise<User> {
+    return await this.userModel.findOne({ email });
+  }
+
+  public async getUserData(email: string): Promise<User> {
+    return await this.userModel.findOne({ email }).select('-password');
+  }
+
+  public async generateHash(password: string): Promise<string> {
     return await bcrypt.hash(password, SALT_OR_ROUNDS);
+  }
+
+  public checkUserPassword(candidate: string, userPassword: string): boolean {
+    return bcrypt.compare(candidate, userPassword);
   }
 
   public async updateConfirmationStatus(email: string): Promise<void> {

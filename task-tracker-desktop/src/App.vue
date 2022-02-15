@@ -1,10 +1,10 @@
 <template>
   <v-app>
-    <v-main >
+    <v-main>
       <div class="blue lighten-4" style="height: 100%">
         <NavigationButtons />
         <Progress />
-        <router-view/>
+        <router-view />
         <SnackBar />
       </div>
     </v-main>
@@ -12,13 +12,13 @@
 </template>
 
 <script>
-import NavigationButtons from '@/components/NavigationButtons';
-import Progress from '@/components/Progress';
-import SnackBar from '@/components/SnackBar';
-
+import NavigationButtons from "@/components/NavigationButtons";
+import Progress from "@/components/Progress";
+import SnackBar from "@/components/SnackBar";
+import actions from "@/store/actions";
 
 export default {
-  name: 'App',
+  name: "App",
 
   data: () => ({
     //
@@ -26,10 +26,12 @@ export default {
   components: {
     NavigationButtons,
     Progress,
-    SnackBar
-  }
+    SnackBar,
+  },
+  async mounted() {
+    await this.$store.dispatch(actions.GET_USER_DATA);
+  },
 };
 </script>
 
-<style>
-</style>
+<style></style>
