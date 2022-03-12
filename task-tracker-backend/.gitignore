@@ -4,6 +4,7 @@
 /cmake
 /db
 /pkgconfig
+.npmrc
 .env
 
 # Logs

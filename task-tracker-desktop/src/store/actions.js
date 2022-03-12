@@ -1,7 +1,9 @@
 const SET_SNACKBAR = "SET_SNACKBAR";
 const GET_USER_DATA = "GET_USER_DATA";
+const LOGOUT = "LOGOUT";
 
 export default {
   SET_SNACKBAR,
   GET_USER_DATA,
+  LOGOUT,
 };

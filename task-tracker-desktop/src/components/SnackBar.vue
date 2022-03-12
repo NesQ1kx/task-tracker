@@ -1,7 +1,7 @@
 <template>
   <v-snackbar
       v-model="snackbar"
-      timeout="2000"
+      timeout="4000"
       :color="snackbarState.status"
       rounded="lg"
     >

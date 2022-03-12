@@ -1,12 +1,15 @@
 <template>
-  <div>
-    Dashboard
-    <span>{{ user.data.email }}</span>
-  </div>
+  <PageView>
+    <template #title>
+      <span>Dashboard</span>
+    </template>
+  </PageView>
 </template>
 
 <script>
 import { mapState } from "vuex";
+import PageView from "@/components/PageView";
+
 export default {
   name: "Dashboard",
   computed: {
@@ -14,7 +17,12 @@ export default {
       user: (state) => state.user,
     }),
   },
+  components: {
+    PageView,
+  }
 };
 </script>
 
-<style></style>
+<style lang="scss">
+
+</style>

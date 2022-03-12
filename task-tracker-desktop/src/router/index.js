@@ -1,22 +1,13 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import Home from "../views/Home.vue";
 
 Vue.use(VueRouter);
 
 const routes = [
   {
     path: "/",
-    name: "Home",
-    component: Home,
-    beforeEnter: (to, from, next) => {
-      const isLogined = false;
-      if (isLogined) {
-        next();
-      } else {
-        next({ name: 'Login' })
-      }
-    }
+    name: "Dashboard",
+    component: () => import(/* webpackChunkName: "dashboard" */ "../views/Dasboard.vue"),
   },
   {
     path: '/login',
@@ -37,6 +28,11 @@ const routes = [
     path: '/dasboard',
     name: 'Dashboard',
     component: () => import(/* webpackChunkName: "dashboard" */ "../views/Dasboard.vue"),
+  },
+  {
+    path: '/connected-messengers',
+    name: 'ConnectedMessengers',
+    component: () => import(/* webpackChunkName: "dashboard" */ "../views/ConnectedMessengers.vue"),
   }
 
 ];

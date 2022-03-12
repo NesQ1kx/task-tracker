@@ -19,7 +19,7 @@ dotenv.config();
       }
     }),
     UserModule,
-    MailModule
+    MailModule,
   ],
   controllers: [AuthContrloller],
   providers: [JwtStrategy, AuthService],

@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { CreateUserDto } from 'src/dto/create-user.dto';
 import { User, UserDocument } from 'src/schemas/user.schema';
 import * as bcrypt from 'bcrypt';
+import { Messenger } from 'src/utils/types';
 
 const SALT_OR_ROUNDS = 10;
 @Injectable()
@@ -12,8 +13,8 @@ export class UserService {
 
   public async createUser(createUserDto: CreateUserDto): Promise<User> {
     const userDto = { ...createUserDto };
-    userDto.password = await this.generateHash(userDto.password);
-    const createdUser = new this.userModel(userDto);
+    const hashedPassword = await this.generateHash(userDto.password);
+    const createdUser = new this.userModel({ ...userDto, password: hashedPassword, connectedMessengers: []});
     return createdUser.save();
   }
 
@@ -40,5 +41,9 @@ export class UserService {
 
   public async updateConfirmationStatus(email: string): Promise<void> {
     await this.userModel.updateOne({ email }, { isConfirmed: true });
+  }
+
+  public async addMessenger(email: string, messenger: Messenger): Promise<void> {
+    await this.userModel.updateOne({ email }, { $push: { connectedMessengers: messenger } });
   }
 }

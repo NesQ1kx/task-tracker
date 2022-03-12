@@ -23,7 +23,7 @@ export default {
 <style>
   .progress {
   position: fixed;
-  top: 20px;
-  right: 20px;
+  left: 20px;
+  bottom: 20px;
 }
 </style>

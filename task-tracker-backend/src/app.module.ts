@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './modules/auth.module';
-import { AirgramService } from './services/airgram.service';
+import { MessengerModule } from './modules/messenger.module';
 import { AppGateway } from './services/events.gateway';
 
 @Module({
@@ -10,8 +10,9 @@ import { AppGateway } from './services/events.gateway';
     ConfigModule.forRoot(),
     MongooseModule.forRoot(process.env.DATABASE_URL),
     AuthModule,
+    MessengerModule,
   ],
   controllers: [],
-  providers: [AppGateway, AirgramService],
+  providers: [AppGateway],
 })
 export class AppModule {}
