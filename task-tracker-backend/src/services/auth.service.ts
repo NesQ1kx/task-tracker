@@ -51,9 +51,9 @@ export class AuthService {
       const user = await this.userService.getUserByEmail(userDto.email);
 
       if (
-        this.userService.checkUserPassword(
-          user.password,
-          await this.userService.generateHash(userDto.password),
+        await this.userService.checkUserPassword(
+          userDto.password,
+          user.password
         )
       ) {
         return {
@@ -62,13 +62,13 @@ export class AuthService {
       } else {
         throw new HttpException(
           { statusCode: StatusCodes.INVALID_EMAIL_OR_PASSWORD },
-          HttpStatus.BAD_REQUEST,
+          HttpStatus.UNAUTHORIZED,
         );
       }
     } else {
       throw new HttpException(
         { statusCode: StatusCodes.INVALID_EMAIL_OR_PASSWORD },
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.UNAUTHORIZED,
       );
     }
   }

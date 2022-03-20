@@ -32,7 +32,12 @@ const routes = [
   {
     path: '/connected-messengers',
     name: 'ConnectedMessengers',
-    component: () => import(/* webpackChunkName: "dashboard" */ "../views/ConnectedMessengers.vue"),
+    component: () => import(/* webpackChunkName: "connected-messengers" */ "../views/ConnectedMessengers.vue"),
+  },
+  {
+    path: '/connected-trackers',
+    name: 'ConnectedTrackers',
+    component: () => import(/* webpackChunkName: "connected-trackers" */ "../views/ConnectedTrackers.vue"),
   }
 
 ];

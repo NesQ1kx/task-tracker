@@ -18,3 +18,23 @@ export const AVAILABLE_MESSENGERS = [
     connectComponentName: "ConnectVK"
   }
 ]
+
+export const SOCKET_EVENTS = {
+  MESSENGER_CONNECTED: 'MESSENGER_CONNECTED',
+  MESSENGER_REMOVED: 'MESSENGER_REMOVED',
+}
+
+export const AVAILABLE_TRACKERS = [
+  {
+    id: 1,
+    name: "Jira",
+    connectComponentName: "ConnectJira",
+    isAvailable: true,
+  },
+  {
+    id: 2,
+    name: "Trello",
+    connectComponentName: "ConnectTrello",
+    isAvailable: false,
+  }
+]

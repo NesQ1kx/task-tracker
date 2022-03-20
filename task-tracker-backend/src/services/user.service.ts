@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { CreateUserDto } from 'src/dto/create-user.dto';
 import { User, UserDocument } from 'src/schemas/user.schema';
 import * as bcrypt from 'bcrypt';
-import { Messenger } from 'src/utils/types';
+import { Messenger, Tracker } from 'src/utils/types';
 
 const SALT_OR_ROUNDS = 10;
 @Injectable()
@@ -14,7 +14,7 @@ export class UserService {
   public async createUser(createUserDto: CreateUserDto): Promise<User> {
     const userDto = { ...createUserDto };
     const hashedPassword = await this.generateHash(userDto.password);
-    const createdUser = new this.userModel({ ...userDto, password: hashedPassword, connectedMessengers: []});
+    const createdUser = new this.userModel({ ...userDto, password: hashedPassword, connectedMessengers: [], connectedTrackers: []});
     return createdUser.save();
   }
 
@@ -35,8 +35,8 @@ export class UserService {
     return await bcrypt.hash(password, SALT_OR_ROUNDS);
   }
 
-  public checkUserPassword(candidate: string, userPassword: string): boolean {
-    return bcrypt.compare(candidate, userPassword);
+  public async checkUserPassword(candidate: string, userPassword: string): Promise<boolean> {
+    return await bcrypt.compare(candidate, userPassword);
   }
 
   public async updateConfirmationStatus(email: string): Promise<void> {
@@ -44,6 +44,14 @@ export class UserService {
   }
 
   public async addMessenger(email: string, messenger: Messenger): Promise<void> {
-    await this.userModel.updateOne({ email }, { $push: { connectedMessengers: messenger } });
+    await this.userModel.updateOne({ email }, { $push: { connectedMessengers: { ...messenger, connectDate: + new Date() } } });
+  }
+
+  public async removeMessenger(email: string, messenger: Messenger): Promise<void> {
+    await this.userModel.updateOne({ email }, { $pull: { connectedMessengers: { id: messenger.id } } });
+  }
+
+  public async addTracker(email: string, tracker: Tracker) {
+    await this.userModel.updateOne({ email }, { $push: { connectedTrackers: { ...tracker, connectDate: + new Date() } } });
   }
 }

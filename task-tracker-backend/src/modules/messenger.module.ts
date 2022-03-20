@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { ConnectMessengerService } from 'src/services/connect-messenger.service';
+import { MessengerService } from 'src/services/messenger.service';
 import { UserModule } from './user.module';
 
 @Module({
   imports: [UserModule],
-  providers: [ConnectMessengerService],
-  exports: [ConnectMessengerService],
+  providers: [MessengerService],
+  exports: [MessengerService],
 })
 export class MessengerModule {}

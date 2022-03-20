@@ -43,12 +43,14 @@
               <v-list-item-title>Подключенные месенджеры</v-list-item-title>
             </v-list-item>
           </router-link>
-          <v-list-item link>
-            <v-list-item-icon>
-              <v-icon>mdi-calendar-check-outline</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>Подключенные трекеры</v-list-item-title>
-          </v-list-item>
+          <router-link to="/connected-trackers">
+            <v-list-item link>
+              <v-list-item-icon>
+                <v-icon>mdi-calendar-check-outline</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>Подключенные трекеры</v-list-item-title>
+            </v-list-item>
+          </router-link>
           <v-list-item link>
             <v-list-item-icon>
               <v-icon>mdi-account-details</v-icon>

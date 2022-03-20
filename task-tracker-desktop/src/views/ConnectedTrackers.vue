@@ -2,12 +2,12 @@
   <div>
     <PageView>
       <template #title>
-        <span>Подключенные мессенджеры</span>
+        <span>Подключенные трекеры</span>
       </template>
       <template #content>
         <transition name="fade">
           <div v-if="isLoaded">
-            <div v-if="connectedMessengers.length">
+            <div v-if="connectedTrackers.length">
               <v-btn
                 small
                 color="primary"
@@ -28,8 +28,9 @@
                 color="primary"
                 icon="mdi-alert"
                 outlined
+                style="margin-top: 20%"
               >
-                <div>Вы не подключили ни одного мессенджера
+                <div>Вы не подключили ни одного трекера
                   <v-btn
                     small
                     color="primary"
@@ -46,20 +47,18 @@
         </transition>
       </template>
     </PageView>
-    <ConnectMessengerDialog ref="connectMessengerDialog" />
-    <RemoveMessengerDialog ref="removeMessengerDialog" :messenger="messengerToRemove" />
+    <ConnectTrackerDialog ref="connectTrackerDialog" />
   </div>
 </template>
 
 <script>
 import PageView from "@/components/PageView";
-import ConnectMessengerDialog from "@/components/messengers/ConnectMessengerDialog";
-import ConnectedMessengerCard from "@/components/messengers/ConnectedMessengerCard";
-import RemoveMessengerDialog from "@/components/messengers/RemoveMessengerDialog";
 import { mapState } from 'vuex';
+import ConnectTrackerDialog from "@/components/trackers/ConnectTrackerDialog";
+
 
 export default {
-  name: "ConnectedMessengers",
+  name: 'ConnectedTrackers',
   data() {
     return {
       messengerToRemove: null,
@@ -68,12 +67,12 @@ export default {
   },
   computed: {
     ...mapState({
-      connectedMessengers: state => state.user.data.connectedMessengers,
+      connectedTrackers: state => state.user.data.connectedTrackers,
     })
   },
   methods: {
     async openDialog() {
-      this.$refs.connectMessengerDialog.open();
+      this.$refs.connectTrackerDialog.open();
     },
 
     onRemoveMessengerClick(messenger) {
@@ -83,9 +82,7 @@ export default {
   },
   components: {
     PageView,
-    ConnectMessengerDialog,
-    ConnectedMessengerCard,
-    RemoveMessengerDialog,
+    ConnectTrackerDialog,
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
@@ -96,12 +93,6 @@ export default {
 </script>
 
 <style lang="scss">
-.empty {
-  position: relative;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
 .cards-wrapper {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;

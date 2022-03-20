@@ -1,4 +1,3 @@
-import Vue from 'vue'
 import axios from "axios";
 
 const API_URL = 'http://localhost:3000/api/v1/';
@@ -18,7 +17,7 @@ instance.interceptors.request.use((config) => {
 });
 
 export default {
-  install() {
+  install(Vue) {
     Vue.prototype.$http = instance;
   }
 }

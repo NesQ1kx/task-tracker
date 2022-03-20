@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document } from 'mongoose';
-import { Messenger } from "src/utils/types";
+import { Messenger, Tracker } from "src/utils/types";
 
 export type UserDocument = User & Document;
 
@@ -23,6 +23,9 @@ export class User {
 
   @Prop()
   connectedMessengers: Messenger[];
+
+  @Prop()
+  connectedTrackers: Tracker[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

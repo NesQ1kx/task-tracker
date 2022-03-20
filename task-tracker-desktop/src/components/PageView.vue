@@ -1,10 +1,12 @@
 <template>
   <div class="view-container">
-    <div class="text-h3 mb-3 font-weight-bold">
-      <slot name="title"></slot>
+    <div class="text-h3 font-weight-bold">
+      <div class="mb-3"> 
+        <slot name="title"></slot>
+      </div>
+      <v-divider></v-divider>
     </div>
-    <v-divider></v-divider>
-      <slot name="content"></slot>
+    <slot name="content"></slot>
   </div>
 </template>
 
@@ -18,5 +20,7 @@ export default {
 .view-container {
   padding: 76px 100px 0;
   height: 100%;
+  display: grid;
+  grid-template-rows: 62px 1fr;
 }
 </style>

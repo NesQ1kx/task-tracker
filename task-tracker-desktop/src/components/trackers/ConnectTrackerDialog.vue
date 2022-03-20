@@ -5,7 +5,7 @@
   >
     <v-card>
       <v-card-title class="grey lighten-3">
-        <span>Подключение мессенджеров</span>
+        <span>Подключение трекеров</span>
       </v-card-title>
         <v-stepper
           v-model="step"
@@ -16,22 +16,22 @@
             :complete="step > 1"
             step="1"
           >
-            Выбор мессенджера
-            <small v-if="selectedMessenger">{{ selectedMessenger.name }}</small>
+            Выбор трекера
+            <small style="height: 12px">{{ selectedTracker && selectedTracker.name }}</small>
           </v-stepper-step>
           <v-stepper-content step="1">
-            <div class="select-messenger-wrapper pa-2 mb-4 ">
+            <div class="select-tracker-wrapper pa-2 mb-4 ">
               <div
-                v-for="(item, index) in availableMessengers"
+                v-for="(item, index) in availableTrackers"
                 :key="index" 
               >
                 <v-hover v-slot="{ hover }">
                   <div
-                    :class="[ hover || (selectedMessenger && selectedMessenger.id === item.id) ? 'elevation-5 grey lighten-3' : 'elevation-2']"
-                    class="messenger-card rounded-lg pa-2 d-flex flex-column align-center"
-                    @click="onSelectMessenger(item.id)"
+                    :class="{ 'grey lighten-3': selectedTracker && selectedTracker.id === item.id, 'grey lighten-5': hover }"
+                    class="tracker-card rounded-lg pa-2 d-flex flex-column align-center elevation-2"
+                    @click="onSelectTracker(item.id)"
                   >
-                    <img :src="require(`@/assets/images/messengers/${item.name}.png`)" alt="" width="48" class="mb-2">
+                    <img :src="require(`@/assets/images/trackers/${item.name}.png`)" alt="" width="48" class="mb-2">
                     <div class="body-2">{{ item.name }}</div>
                   </div>
                 </v-hover>
@@ -42,7 +42,7 @@
               class="ml-2 mb-1"
               @click="step = 2"
               small
-              :disabled="!selectedMessenger"
+              :disabled="!selectedTracker"
             >
               Далее
             </v-btn>
@@ -58,21 +58,13 @@
             <keep-alive>
               <component
                 @connect:success="onSuccessConnect"
-                v-if="selectedMessenger && step === 2"
-                :is="selectedMessenger.isAvailable ? selectedMessenger.connectComponentName : 'MessengerUnavailable'" />
+                v-if="selectedTracker && step === 2"
+                :is="selectedTracker.isAvailable ? selectedTracker.connectComponentName : 'TrackerUnavailable'" />
             </keep-alive>
            <div class="mb-1">
               <v-btn
+                small
                 color="secondary"
-                class="mr-2"
-                @click="handleFinish"
-                small
-              >
-                Завершить
-              </v-btn>
-              <v-btn
-                text
-                small
                 @click="step -= 1"
               >
                 Назад
@@ -95,18 +87,18 @@
 </template>
 
 <script>
-import { AVAILABLE_MESSENGERS } from "@/utils/constants";
-import ConnectTelegram from "@/components/ConnectTelegram";
-import MessengerUnavailable from "@/components/MessengerUnavailable";
+import { AVAILABLE_TRACKERS } from "@/utils/constants";
+import ConnectJira from "@/components/trackers/ConnectJira";
+import TrackerUnavailable from "@/components/trackers/TrackerUnavailable";
 
 export default {
-  name: "ConnectMessengerDialog",
+  name: "ConnectTrackerDialog",
   data() {
     return {
       dialog: false,
       step: 1,
-      availableMessengers: AVAILABLE_MESSENGERS,
-      selectedMessenger: null,
+      availableTrackers: AVAILABLE_TRACKERS,
+      selectedTracker: null,
     };
   },
   methods: {
@@ -114,12 +106,12 @@ export default {
       this.dialog = true;
     },
 
-    onSelectMessenger(id) {
-      this.selectedMessenger = this.availableMessengers.find(item => item.id === id);
+    onSelectTracker(id) {
+      this.selectedTracker = this.availableTrackers.find(item => item.id === id);
     },
 
     closeDialog() {
-      this.selectedMessenger = null;
+      this.selectedTracker = null;
       this.step = 1;
       this.dialog = false;
     },
@@ -129,23 +121,23 @@ export default {
     },
 
     handleFinish() {
-      this.$ws.emit('events', JSON.stringify({ event: 'CONNECT_MESSENGER' }));
+      this.$ws.emit('events', JSON.stringify({ event: 'CONNECT_TRACKER' }));
     }
   },
   components: {
-    ConnectTelegram,
-    MessengerUnavailable,
+    ConnectJira,
+    TrackerUnavailable,
   },
 }
 </script>
 
 <style lang="scss" scoped>
-.select-messenger-wrapper {
+.select-tracker-wrapper {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
   gap: 20px;
 
-  .messenger-card {
+  .tracker-card {
     cursor: pointer;
     transition: all  .1s linear;
   }

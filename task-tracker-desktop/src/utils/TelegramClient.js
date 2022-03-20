@@ -27,13 +27,6 @@ export class TelegramClient {
     });
   }
 
-  requestCode() {
-    this.client.send({
-      '@type': 'requestQrCodeAuthentication',
-      other_user_ids: [],
-    })
-  }
-
   onUpdate(cb) {
     this.client.onUpdate = cb;
   }
