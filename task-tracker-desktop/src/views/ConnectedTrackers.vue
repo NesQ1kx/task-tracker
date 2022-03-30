@@ -18,8 +18,8 @@
                 Подключить
               </v-btn>
               <div class="cards-wrapper mt-10">
-                <div v-for="(messenger, index) in connectedMessengers" :key="index">
-                  <ConnectedMessengerCard :messenger="messenger" @remove:click="onRemoveMessengerClick" />
+                <div v-for="(tracker, index) in connectedTrackers" :key="index">
+                  <ConnectedTrackerCard :tracker="tracker" @remove:click="onRemoveTrackerClick" />
                 </div>
               </div>
             </div>
@@ -48,6 +48,7 @@
       </template>
     </PageView>
     <ConnectTrackerDialog ref="connectTrackerDialog" />
+    <RemoveTrackerDialog ref="removeTrackerDialog" :tracker="trackerToRemove" />
   </div>
 </template>
 
@@ -55,13 +56,15 @@
 import PageView from "@/components/PageView";
 import { mapState } from 'vuex';
 import ConnectTrackerDialog from "@/components/trackers/ConnectTrackerDialog";
+import ConnectedTrackerCard from "@/components/trackers/ConnectedTrackerCard";
+import RemoveTrackerDialog from "@/components/trackers/RemoveTrackerDialog";
 
 
 export default {
   name: 'ConnectedTrackers',
   data() {
     return {
-      messengerToRemove: null,
+      trackerToRemove: null,
       isLoaded: false,
     };
   },
@@ -75,14 +78,16 @@ export default {
       this.$refs.connectTrackerDialog.open();
     },
 
-    onRemoveMessengerClick(messenger) {
-      this.messengerToRemove = messenger;
-      this.$refs.removeMessengerDialog.open();
+    onRemoveTrackerClick(tracker) {
+      this.trackerToRemove = tracker;
+      this.$refs.removeTrackerDialog.open();
     }
   },
   components: {
     PageView,
     ConnectTrackerDialog,
+    ConnectedTrackerCard,
+    RemoveTrackerDialog
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {

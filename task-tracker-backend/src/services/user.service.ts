@@ -5,6 +5,9 @@ import { CreateUserDto } from 'src/dto/create-user.dto';
 import { User, UserDocument } from 'src/schemas/user.schema';
 import * as bcrypt from 'bcrypt';
 import { Messenger, Tracker } from 'src/utils/types';
+import { STATUS_CODES } from 'http';
+import { StatusCodes } from 'src/utils/status-codes.enum';
+import { ISuccessOperation } from 'src/interfaces/success-operation.interface';
 
 const SALT_OR_ROUNDS = 10;
 @Injectable()
@@ -53,5 +56,19 @@ export class UserService {
 
   public async addTracker(email: string, tracker: Tracker) {
     await this.userModel.updateOne({ email }, { $push: { connectedTrackers: { ...tracker, connectDate: + new Date() } } });
+  }
+
+  public async removeTracker(email: string, tracker: Tracker) {
+    await this.userModel.updateOne({ email }, { $pull: { connectedTrackers: { id: tracker.id } } });
+  }
+
+  public async updateUserSettings(email: string, fieldName: string, value: string): Promise<ISuccessOperation> {
+    const userModel = await this.userModel.findOne({ email });
+    if (userModel && userModel[fieldName]) {
+      userModel[fieldName] = value;
+      await userModel.save();
+
+      return { statusCode: StatusCodes.PROFILE_UPDATED };
+    }
   }
 }

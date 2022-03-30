@@ -4,9 +4,7 @@ import mutations from "./mutations";
 import actions from "./actions";
 import STATUS_CODES_MAP from "../utils/statusCodesMap";
 import router from "../router/index";
-
-const { Notification } = require('electron');
-
+import { ipcRenderer  } from 'electron'
 
 Vue.use(Vuex);
 
@@ -46,6 +44,14 @@ export default new Vuex.Store({
         ],
         cachedUsers: [],
       }
+    },
+    trackers: {
+      jira: {
+        projects: [],
+      },
+      trello: {
+        boards: [],
+      }
     }
   },
   mutations: {
@@ -73,6 +79,12 @@ export default new Vuex.Store({
     },
     [mutations.SET_FINGERPRINT](state, payload) {
       state.fingerPrint = payload;
+    },
+    [mutations.SET_JIRA_PROJECTS](state, payload) {
+      state.trackers.jira.projects = payload;
+    },
+    [mutations.SET_TRELLO_BOARDS](state, payload) {
+      state.trackers.trello.boards = payload;
     }
   },
   actions: {
@@ -129,7 +141,49 @@ export default new Vuex.Store({
         };
 
         commit(mutations.SET_TELEGRAM_MESSAGE, message);
-        new Notification({ title: 'Сообщение' }).show();
+
+        ipcRenderer.send('message', { messenger: 'Telegram', message });
+      }
+    },
+    async [actions.GET_JIRA_PROJECTS]({ state }) {
+      const jira = state.user.data.connectedTrackers.find(({ id }) => id === 1);
+      this._vm.$ws.emit('events', JSON.stringify({ event: 'GET_JIRA_PROJECTS', payload: jira }));
+    },
+    [actions.SET_JIRA_PROJECTS]({ commit }, payload) {
+      const projects = payload.data.map(item => ({ name: item.name, id: item.id, link: item.self }));
+      commit(mutations.SET_JIRA_PROJECTS, projects);
+    },
+
+    [actions.GET_TRELLO_BOARDS]({ state }) {
+      const trello = state.user.data.connectedTrackers.find(({ id }) => id === 2);
+      this._vm.$ws.emit('events', JSON.stringify({ event: 'GET_TRELLO_BOARDS', payload: trello }));
+    },
+
+    [actions.SET_TRELLO_BOARDS]({ commit }, payload) {
+      const boards = payload.map(item => {
+        const lists = item.lists.map(list => ({ id: list.id, name: list.name }));
+
+        const board = { id: item.id, name: item.name, lists };
+
+        return board;
+      });
+
+      commit(mutations.SET_TRELLO_BOARDS, boards);
+    },
+    async [actions.UPDATE_USER_SETTINGS]({ dispatch }, payload) {
+      try {
+        const response = await this._vm.$http.post("auth/settings", {
+          fieldName: payload.fieldName,
+          value: payload.value,
+        });
+        
+        dispatch(actions.SET_SNACKBAR, {
+          status: 'success',
+          code: response.data.statusCode
+        })
+        dispatch(actions.GET_USER_DATA);
+      } catch (e) {
+        console.log(e);
       }
     }
   },

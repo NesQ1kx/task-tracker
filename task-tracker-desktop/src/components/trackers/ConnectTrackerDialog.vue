@@ -88,7 +88,8 @@
 
 <script>
 import { AVAILABLE_TRACKERS } from "@/utils/constants";
-import ConnectJira from "@/components/trackers/ConnectJira";
+import ConnectJira from "@/components/trackers/jira/ConnectJira";
+import ConnectTrello from "@/components/trackers/trello/ConnectTrello";
 import TrackerUnavailable from "@/components/trackers/TrackerUnavailable";
 
 export default {
@@ -127,6 +128,7 @@ export default {
   components: {
     ConnectJira,
     TrackerUnavailable,
+    ConnectTrello
   },
 }
 </script>

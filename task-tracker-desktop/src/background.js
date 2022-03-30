@@ -1,6 +1,6 @@
 'use strict'
 
-import { app, protocol, BrowserWindow } from 'electron'
+import { app, protocol, BrowserWindow, Notification, ipcMain } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
@@ -35,6 +35,8 @@ async function createWindow() {
   }
 }
 
+
+app.setAppUserModelId('Task Tracker');
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
   // On macOS it is common for applications and their menu bar
@@ -79,3 +81,8 @@ if (isDevelopment) {
     })
   }
 }
+
+ipcMain.on('message', (e, data) => {
+  const { messenger, message } = data;
+  new Notification({ title: `Сообщение из ${messenger}`,body: `${message.user.userName}: ${message.content}` }).show();
+});

@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from 'src/dto/create-user.dto';
 import { SigninUserDto } from 'src/dto/signin-user.dto';
 import { SignupConfirmDto } from 'src/dto/signup-confirm.dto';
+import { UpdateUserSettingsDto } from 'src/dto/update-user-settings.dto';
 import { ISuccessLogin } from 'src/interfaces/success-login.interface';
 import { ISuccessOperation } from 'src/interfaces/success-operation.interface';
 import { User } from 'src/schemas/user.schema';
@@ -117,5 +118,10 @@ export class AuthService {
     }
 
     return code;
+  }
+
+  public async updateUserSettings(authToken: string, updateUserSettingsDto: UpdateUserSettingsDto): Promise<ISuccessOperation> {
+    const userEmail = this.decode(authToken);
+    return await this.userService.updateUserSettings(userEmail, updateUserSettingsDto.fieldName, updateUserSettingsDto.value);
   }
 }

@@ -51,12 +51,14 @@
               <v-list-item-title>Подключенные трекеры</v-list-item-title>
             </v-list-item>
           </router-link>
-          <v-list-item link>
-            <v-list-item-icon>
-              <v-icon>mdi-account-details</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>Профиль</v-list-item-title>
-          </v-list-item>
+          <router-link to="/profile">
+            <v-list-item link>
+              <v-list-item-icon>
+                <v-icon>mdi-account-details</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>Профиль</v-list-item-title>
+            </v-list-item>
+          </router-link>
           <router-link to="/">
             <v-list-item link>
             <v-list-item-icon>

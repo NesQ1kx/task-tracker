@@ -20,7 +20,12 @@
       <div class="tabs-content white rounded-xl elevation-2" v-if="selectedMessenger">
           <div v-if="messagesToDisplay.length" class="messages-list pa-10">
             <transition-group name="list">
-              <Message :message="message" v-for="(message, index) in messagesToDisplay" :key="index" />
+              <Message
+                :message="message"
+                v-for="(message, index) in messagesToDisplay"
+                :key="index"
+                @tracker:select="onSelectTracker($event, message)"
+              />
             </transition-group>
           </div>
           <div v-else class="no-messages grey--text">
@@ -28,12 +33,25 @@
           </div>
       </div>
     </div>
+    <CreateJiraIssueDialog
+      :tracker="selectedTracker"
+      :message="selectedMessage"
+      ref="createJiraIssueDialog"
+    />
+    <CreateTrelloIssueDialog
+      :tracker="selectedTracker"
+      :message="selectedMessage"
+      ref="createTrelloIssueDialog"
+    />
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex';
 import Message from "./Message.vue";
+import CreateJiraIssueDialog from '@/components/trackers/jira/CreateJiraIssueDialog';
+import CreateTrelloIssueDialog from '@/components/trackers/trello/CreateTrelloIssueDialog';
+
 
 export default {
   name: 'MessengersDashboard',
@@ -41,6 +59,8 @@ export default {
     return {
       selectedMessenger: null,
       messagesToDisplay: [],
+      selectedMessage: null,
+      selectedTracker: null
     };
   },
   computed: {
@@ -67,11 +87,24 @@ export default {
           this.messagesToDisplay = []
           break;
       }
+    },
+    onSelectTracker(tracker, message) {
+      this.selectedTracker = tracker;
+      this.selectedMessage = message;
+      switch(tracker.id) {
+        case 1:
+          this.$refs.createJiraIssueDialog.openDialog();
+          break;
+        case 2:
+          this.$refs.createTrelloIssueDialog.openDialog();
+      }
     }
   },
 
   components: {
     Message,
+    CreateJiraIssueDialog,
+    CreateTrelloIssueDialog,
   }
 }
 </script>

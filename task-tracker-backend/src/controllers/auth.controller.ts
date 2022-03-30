@@ -9,10 +9,11 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto } from 'src/dto/create-user.dto';
 import { AuthService } from 'src/services/auth.service';
-import { Request, response, Response } from 'express';
+import { Request, Response } from 'express';
 import { SignupConfirmDto } from 'src/dto/signup-confirm.dto';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 import { SigninUserDto } from 'src/dto/signin-user.dto';
+import { UpdateUserSettingsDto } from 'src/dto/update-user-settings.dto';
 
 @Controller('/api/v1/auth')
 export class AuthContrloller {
@@ -61,5 +62,18 @@ export class AuthContrloller {
     const userProfile = await this.authService.getUserProfile(authToken);
 
     response.json({ userProfile });
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('settings')
+  public async updateUserSettings(
+    @Req() request: Request,
+    @Res() res: Response,
+    @Body() updateUserSettingsDto: UpdateUserSettingsDto
+  ): Promise<void> {
+    const authToken = request.headers.authorization.split('Bearer ')[1];
+    const response = await this.authService.updateUserSettings(authToken.trim(), updateUserSettingsDto);
+
+    res.json(response);
   }
 }

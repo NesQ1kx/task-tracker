@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './modules/auth.module';
 import { MessengerModule } from './modules/messenger.module';
+import { TrackerModule } from './modules/tracker.module';
 import { AppGateway } from './services/events.gateway';
 
 @Module({
@@ -11,6 +12,7 @@ import { AppGateway } from './services/events.gateway';
     MongooseModule.forRoot(process.env.DATABASE_URL),
     AuthModule,
     MessengerModule,
+    TrackerModule,
   ],
   controllers: [],
   providers: [AppGateway],

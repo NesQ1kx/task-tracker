@@ -24,23 +24,24 @@
       <v-list dense>
         <v-list-item class="subtitle-2" disabled>Создать задачу</v-list-item>
         <v-list-item
-          v-for="(item, index) in availableTrackers"
+          v-for="(item, index) in connectedTrackers"
           :key="index"
           link
+          @click="selectTracker(item)"
         >
           <img
-            :src="require(`@/assets/images/trackers/${item.name}.png`)"
+            :src="require(`@/assets/images/trackers/${item.trackerName}.png`)"
             height="24"
             class="mr-4"
           />
-          <v-list-item-title class="subtitle-2">{{ item.name }}</v-list-item-title>
+          <v-list-item-title class="subtitle-2">{{ item.trackerName }}</v-list-item-title>
         </v-list-item>
       </v-list>
     </v-menu>
 </template>
 
 <script>
-import { AVAILABLE_TRACKERS } from "@/utils/constants";
+import { mapState } from 'vuex';
 
 export default {
   name: 'Message',
@@ -50,12 +51,21 @@ export default {
       require: true,
     }
   },
+  computed: {
+    ...mapState({
+      connectedTrackers: state => state.user.data.connectedTrackers,
+    })
+  },
   data() {
     return {
       showMenu: false,
-      availableTrackers: AVAILABLE_TRACKERS
     };
   },
+  methods: {
+    selectTracker(item) {
+      this.$emit('tracker:select', item)
+    }
+  }
 }
 </script>
 

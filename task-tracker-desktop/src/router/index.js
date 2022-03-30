@@ -38,8 +38,12 @@ const routes = [
     path: '/connected-trackers',
     name: 'ConnectedTrackers',
     component: () => import(/* webpackChunkName: "connected-trackers" */ "../views/ConnectedTrackers.vue"),
+  },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: () => import(/* webpackChunkName: "profile" */ "../views/Profile.vue"),
   }
-
 ];
 
 const router = new VueRouter({
