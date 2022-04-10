@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './modules/auth.module';
 import { MessengerModule } from './modules/messenger.module';
+import { StatisticModule } from './modules/statistic.module';
 import { TrackerModule } from './modules/tracker.module';
 import { AppGateway } from './services/events.gateway';
 
@@ -13,8 +14,8 @@ import { AppGateway } from './services/events.gateway';
     AuthModule,
     MessengerModule,
     TrackerModule,
+    // StatisticModule,
   ],
-  controllers: [],
   providers: [AppGateway],
 })
 export class AppModule {}

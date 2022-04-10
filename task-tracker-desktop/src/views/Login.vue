@@ -100,8 +100,12 @@ export default {
         });
         this.$store.commit(mutations.SET_LOADING, { value: false });
         localStorage.setItem("authToken", response.data.authToken);
-        this.$store.dispatch(actions.GET_USER_DATA);
-        this.$router.push({ name: "Dashboard" });
+        if (response.data.isTwoFaEnabled) {
+          this.$router.push({ name: "ConfirmByTwoFa" });
+        } else {
+          this.$store.dispatch(actions.GET_USER_DATA);
+          this.$router.push({ name: "Dashboard" });
+        }
       } catch (e) {
         this.$store.dispatch(actions.SET_SNACKBAR, {
           status: "error",

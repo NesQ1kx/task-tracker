@@ -17,11 +17,11 @@ import NavigationButtons from "@/components/NavigationButtons";
 import Progress from "@/components/Progress";
 import SnackBar from "@/components/SnackBar";
 import Sidebar from "@/components/Sidebar";
+import { machineId } from 'node-machine-id';
 
 import actions from "@/store/actions";
 import mutations from "@/store/mutations";
 import { mapState } from 'vuex';
-import FingerpringJS from '@fingerprintjs/fingerprintjs';
 import { SOCKET_EVENTS } from '@/utils/constants';
 
 export default {
@@ -111,9 +111,8 @@ export default {
       await this.eventsActions[event.event](event.payload);
     });
 
-    const fpInstance = await FingerpringJS.load();
-    const fpResult = await fpInstance.get();
-    this.$store.commit(mutations.SET_FINGERPRINT, fpResult.visitorId);
+    const id = await machineId();
+    this.$store.commit(mutations.SET_FINGERPRINT, id);
   },
 
   watch: {

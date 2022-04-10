@@ -26,6 +26,9 @@ export class User {
 
   @Prop()
   connectedTrackers: Tracker[];
+
+  @Prop()
+  isTwoFaEnabled: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

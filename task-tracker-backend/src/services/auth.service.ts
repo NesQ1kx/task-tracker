@@ -41,6 +41,7 @@ export class AuthService {
       );
       return {
         authToken: this.createAuthToken(userDto.email),
+        isTwoFaEnabled: false,
       };
     }
   }
@@ -57,8 +58,18 @@ export class AuthService {
           user.password
         )
       ) {
+        if (user.isTwoFaEnabled) {
+          const confirmationCode = this.generateConfirmationCode();
+          this.usersCodesMap.set(userDto.email, confirmationCode);
+          await this.mailService.sendTwoFaConfirmation(
+            confirmationCode,
+            userDto.email,
+          );
+        }
+
         return {
           authToken: this.createAuthToken(userDto.email),
+          isTwoFaEnabled: user.isTwoFaEnabled,
         };
       } else {
         throw new HttpException(
@@ -102,7 +113,7 @@ export class AuthService {
     return await this.userService.getUserData(email);
   }
 
-  private decode(token: string): string {
+  public decode(token: string): string {
     return this.jwtService.decode(token)['email'];
   }
 
@@ -123,5 +134,31 @@ export class AuthService {
   public async updateUserSettings(authToken: string, updateUserSettingsDto: UpdateUserSettingsDto): Promise<ISuccessOperation> {
     const userEmail = this.decode(authToken);
     return await this.userService.updateUserSettings(userEmail, updateUserSettingsDto.fieldName, updateUserSettingsDto.value);
+  }
+
+  public confirmTwoFa(code: string, authToken: string): ISuccessOperation {
+    const userEmail = this.decode(authToken);
+
+    if (code === this.usersCodesMap.get(userEmail)) {
+      this.usersCodesMap.delete(userEmail);
+      return {
+        statusCode: StatusCodes.TWO_FA_CONFIRMED,
+      };
+    } else {
+      throw new HttpException(
+        { statusCode: StatusCodes.INVALID_CONFIRMATION_CODE },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  public async sendTwoFaCode(authToken: string): Promise<void> {
+    const confirmationCode = this.generateConfirmationCode();
+    const userEmail = this.decode(authToken);
+    this.usersCodesMap.set(userEmail, confirmationCode);
+    await this.mailService.sendTwoFaConfirmation(
+      confirmationCode,
+      userEmail,
+    );
   }
 }

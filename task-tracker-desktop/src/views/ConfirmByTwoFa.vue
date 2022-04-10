@@ -17,7 +17,6 @@
 </template>
 
 <script>
-import mutations from "@/store/mutations";
 import actions from "@/store/actions";
 
 export default {
@@ -30,26 +29,11 @@ export default {
   methods: {
     async onCompleteOtp(otpValue) {
       try {
-        this.$store.commit(mutations.SET_LOADING, { value: true });
-        this.disabled = true;
-        const response = await this.$http.post("auth/confirm", {
-          code: otpValue,
-        });
-        this.$store.dispatch(actions.SET_SNACKBAR, {
-          status: "success",
-          code: response.data.statusCode,
-        });
-        this.$store.commit(mutations.SET_LOADING, { value: false });
+        await this.$store.dispatch(actions.CONFIRM_TWO_FA, { code: otpValue });
         await this.$store.dispatch(actions.GET_USER_DATA);
         this.$router.push({ name: "Dashboard" });
-      } catch (e) {
+      } catch(e) {
         console.log(e);
-        this.$store.commit(mutations.SET_LOADING, { value: false });
-        this.disabled = false;
-        this.$store.dispatch(actions.SET_SNACKBAR, {
-          status: "error",
-          code: e.response.data.statusCode,
-        });
       }
     },
   },

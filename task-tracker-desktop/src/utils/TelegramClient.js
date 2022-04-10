@@ -15,8 +15,8 @@ export class TelegramClient {
       '@type': 'setTdlibParameters',
       parameters: {
         use_test_dc: false,
-        api_id: 17854937,
-        api_hash: '2cc35d700aba4ebb081a582e5a4e70c7',
+        api_id: process.env.VUE_APP_TDLIB_API_ID,
+        api_hash: process.env.VUE_APP_TDLIB_API_HASH,
         use_message_database: false,
         use_file_database: false,
         use_secret_chats: false,

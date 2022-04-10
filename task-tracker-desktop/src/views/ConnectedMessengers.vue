@@ -19,7 +19,11 @@
               </v-btn>
               <div class="cards-wrapper mt-10">
                 <div v-for="(messenger, index) in connectedMessengers" :key="index">
-                  <ConnectedMessengerCard :messenger="messenger" @remove:click="onRemoveMessengerClick" />
+                  <ConnectedMessengerCard
+                    :messenger="messenger"
+                    @remove:click="onRemoveMessengerClick"
+                    @connect-on-device:click="onConnectOnDeviceClick"
+                  />
                 </div>
               </div>
             </div>
@@ -48,6 +52,7 @@
     </PageView>
     <ConnectMessengerDialog ref="connectMessengerDialog" />
     <RemoveMessengerDialog ref="removeMessengerDialog" :messenger="messengerToRemove" />
+    <ConnectMessengerOnDevice ref="connectOnDeviceDialog" />
   </div>
 </template>
 
@@ -56,6 +61,7 @@ import PageView from "@/components/PageView";
 import ConnectMessengerDialog from "@/components/messengers/ConnectMessengerDialog";
 import ConnectedMessengerCard from "@/components/messengers/ConnectedMessengerCard";
 import RemoveMessengerDialog from "@/components/messengers/RemoveMessengerDialog";
+import ConnectMessengerOnDevice from "@/components/messengers/ConnectMessengerOnDevice";
 import { mapState } from 'vuex';
 
 export default {
@@ -79,6 +85,9 @@ export default {
     onRemoveMessengerClick(messenger) {
       this.messengerToRemove = messenger;
       this.$refs.removeMessengerDialog.open();
+    },
+    onConnectOnDeviceClick(messenger) {
+      this.$refs.connectOnDeviceDialog.open(messenger);
     }
   },
   components: {
@@ -86,6 +95,7 @@ export default {
     ConnectMessengerDialog,
     ConnectedMessengerCard,
     RemoveMessengerDialog,
+    ConnectMessengerOnDevice,
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {

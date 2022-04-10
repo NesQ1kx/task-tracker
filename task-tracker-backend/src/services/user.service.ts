@@ -1,11 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateUserDto } from 'src/dto/create-user.dto';
 import { User, UserDocument } from 'src/schemas/user.schema';
 import * as bcrypt from 'bcrypt';
 import { Messenger, Tracker } from 'src/utils/types';
-import { STATUS_CODES } from 'http';
 import { StatusCodes } from 'src/utils/status-codes.enum';
 import { ISuccessOperation } from 'src/interfaces/success-operation.interface';
 
@@ -17,7 +16,13 @@ export class UserService {
   public async createUser(createUserDto: CreateUserDto): Promise<User> {
     const userDto = { ...createUserDto };
     const hashedPassword = await this.generateHash(userDto.password);
-    const createdUser = new this.userModel({ ...userDto, password: hashedPassword, connectedMessengers: [], connectedTrackers: []});
+    const createdUser = new this.userModel({
+      ...userDto,
+      password: hashedPassword,
+      connectedMessengers: [],
+      connectedTrackers: [],
+      isTwoFaEnabled: false,
+    });
     return createdUser.save();
   }
 
@@ -62,11 +67,26 @@ export class UserService {
     await this.userModel.updateOne({ email }, { $pull: { connectedTrackers: { id: tracker.id } } });
   }
 
-  public async updateUserSettings(email: string, fieldName: string, value: string): Promise<ISuccessOperation> {
+  public async updateUserSettings(email: string, fieldName: string, value: string | string[]): Promise<ISuccessOperation> {
     const userModel = await this.userModel.findOne({ email });
-    if (userModel && userModel[fieldName]) {
-      userModel[fieldName] = value;
-      await userModel.save();
+    const isFieldExist = await this.userModel.find({ filedName: { $exists: true } });
+    if (userModel && isFieldExist) {
+      if (fieldName !== 'password') {
+        userModel[fieldName] = value;
+        await userModel.save();
+      } else {
+        const currentPasswordIsCorrect = await this.checkUserPassword(value[0], userModel.password);
+        if (!currentPasswordIsCorrect) {
+          throw new HttpException(
+            { statusCode: StatusCodes.INVALID_CURRENT_PASSWORD },
+            HttpStatus.BAD_REQUEST,
+          );
+        } else {
+          const newPasswrod = await this.generateHash(value[1]);
+          userModel.password = newPasswrod;
+          await userModel.save();
+        }
+      }
 
       return { statusCode: StatusCodes.PROFILE_UPDATED };
     }

@@ -124,6 +124,7 @@ export default {
   computed: {
     ...mapState({
       projects: state => state.trackers.jira.projects,
+      userData: state => state.user.data,
     })
   },
   mounted() {
@@ -149,6 +150,7 @@ export default {
           projectId: this.selectedProject.id,
           summary: this.summary,
           description: this.description,
+          userEmail: this.userData.email,
           ...this.tracker,
         }
       }));

@@ -43,6 +43,12 @@ const routes = [
     path: '/profile',
     name: 'Profile',
     component: () => import(/* webpackChunkName: "profile" */ "../views/Profile.vue"),
+  },
+  {
+    path: '/two-fa',
+    name: 'ConfirmByTwoFa',
+    component: () => import(/* webpackChunkName: "confirm-by-twofa" */ "../views/ConfirmByTwoFa.vue"),
+
   }
 ];
 

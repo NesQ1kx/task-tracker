@@ -36,10 +36,41 @@
                 @click="startEditing('lastName')"
               >
               </v-text-field>
+              <v-text-field
+                label="Пароль"
+                v-model="password"
+                outlined
+                required
+                readonly
+                dense
+                type="password"
+                @click="startEditing('password')"
+              >
+              </v-text-field>
+              <div>
+                <v-switch
+                  v-model="isTwoFaEnabled"
+                  label="Двухфакторная аутентификация"
+                  @change="onChangeToFaSwitch"
+                ></v-switch>
+              </div>
             </form>
+            <div class="mt-10">
+              <div class="text-h5 font-weight-bold">
+                Ваша статистика
+              </div>
+              <v-divider></v-divider>
+              <Statisctics />
+          </div>
         </div>
       </transition>
+      
       <EditProfileFieldDialog ref="editFieldDialog" :field="editingField"/>
+      <ToggleTwoFaDialog
+        ref="toggleTwoFaDialog"
+        @two-fa:error="onTwoFaError"
+        @two-fa:success="onTwoFaSuccess"
+        />
     </template>
   </PageView>
 </template>
@@ -47,7 +78,10 @@
 <script>
 import PageView from '@/components/PageView';
 import { mapState } from 'vuex';
-import EditProfileFieldDialog from '@/components/EditProfileFieldDialog';
+import EditProfileFieldDialog from '@/components/profile/EditProfileFieldDialog';
+import ToggleTwoFaDialog from '@/components/profile/ToggleTwoFaDialog';
+import actions from '@/store/actions';
+import Statisctics from '@/components/profile/Statisctics';
 
 export default {
   name: 'Profile',
@@ -59,7 +93,9 @@ export default {
       firstName: '',
       editingField: null,
       lastName: '',
-      password: ''
+      password: '23123131231313423243234234234234',
+      isTwoFaEnabled: false,
+      isTwoFaEnabledTemp: false,
     };
   },
   computed: {
@@ -68,10 +104,7 @@ export default {
     }),
   },
   mounted() {
-    const { email, firstName, lastName } = this.userData;
-    this.email = email;
-    this.firstName = firstName;
-    this.lastName = lastName;
+    this.setFields(this.userData);
   },
   methods: {
     startEditing(propName) {
@@ -86,19 +119,41 @@ export default {
           }
           this.$refs.editFieldDialog.open();
           break;
-        // case 'password':
-        //   this.editingField = {
-        //     type: 'password',
-        //     rules: {
-        //       min: 8,
-        //       required: true,
-        //       regex:
-        //         '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*_-])',
-        //     },
-        //     value: this[propName],
-        //     fieldName: propName,
-        //   }
+        case 'password':
+          this.editingField = {
+            type: 'password',
+            rules: {
+              min: 8,
+              required: true,
+              regex:
+                '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*_-])',
+            },
+            fieldName: propName,
+          }
+          this.$refs.editFieldDialog.open();
+          break;
       }
+    },
+    async onChangeToFaSwitch(value) {
+      this.isTwoFaEnabledTemp = value;
+      this.$refs.toggleTwoFaDialog.open();
+      await this.$http.get('/auth/two-fa-send');
+    },
+    setFields(data) {
+      const { email, firstName, lastName, isTwoFaEnabled } = data;
+      this.email = email;
+      this.firstName = firstName;
+      this.lastName = lastName;
+      this.isTwoFaEnabled = isTwoFaEnabled;
+    },
+    onTwoFaError() {
+      this.isTwoFaEnabled = this.userData.isTwoFaEnabled;
+    },
+    async onTwoFaSuccess() {
+      await this.$store.dispatch(actions.UPDATE_USER_SETTINGS, {
+        fieldName: 'isTwoFaEnabled',
+        value: this.isTwoFaEnabledTemp,
+      });
     }
   },
   beforeRouteEnter(to, from, next) {
@@ -109,14 +164,13 @@ export default {
   components: {
     PageView,
     EditProfileFieldDialog,
+    ToggleTwoFaDialog,
+    Statisctics,
   },
   watch: {
     userData(data) {
       if (data) {
-        const { email, firstName, lastName } = data;
-        this.email = email;
-        this.firstName = firstName;
-        this.lastName = lastName;
+       this.setFields(data);
       }
     }
   },

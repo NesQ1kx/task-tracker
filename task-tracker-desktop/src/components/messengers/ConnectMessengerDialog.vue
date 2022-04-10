@@ -27,6 +27,7 @@
               >
                 <v-hover v-slot="{ hover }">
                   <div
+                    v-ripple
                     :class="{ 'grey lighten-3': selectedMessenger && selectedMessenger.id === item.id, 'grey lighten-5': hover }"
                     class="messenger-card rounded-lg pa-2 d-flex flex-column align-center elevation-2"
                     @click="onSelectMessenger(item.id)"

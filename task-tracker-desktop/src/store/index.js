@@ -45,6 +45,7 @@ export default new Vuex.Store({
         cachedUsers: [],
       }
     },
+    statistic: [],
     trackers: {
       jira: {
         projects: [],
@@ -85,6 +86,9 @@ export default new Vuex.Store({
     },
     [mutations.SET_TRELLO_BOARDS](state, payload) {
       state.trackers.trello.boards = payload;
+    },
+    [mutations.SET_STATISTIC](state, payload) {
+      state.statistic = payload;
     }
   },
   actions: {
@@ -183,7 +187,42 @@ export default new Vuex.Store({
         })
         dispatch(actions.GET_USER_DATA);
       } catch (e) {
-        console.log(e);
+        dispatch(actions.SET_SNACKBAR, {
+          status: "error",
+          code: e.response.data.statusCode,
+        });
+
+        throw new Error();
+      }
+    },
+    async [actions.CONFIRM_TWO_FA]({ dispatch, commit }, payload) {
+      try {
+        commit(mutations.SET_LOADING, { value: true });
+        const response = await this._vm.$http.post('auth/two-fa-confirm', {
+          code: payload.code,
+        });
+        dispatch(actions.SET_SNACKBAR, {
+          status: "success",
+          code: response.data.statusCode,
+        });
+        commit(mutations.SET_LOADING, { value: false });
+      } catch (e) {
+        commit(mutations.SET_LOADING, { value: false });
+        dispatch(actions.SET_SNACKBAR, {
+          status: "error",
+          code: e.response.data.statusCode,
+        });
+
+        throw new Error();
+      }
+    },
+
+    async [actions.GET_STATISTIC]({ commit }) {
+      try {
+        const response = await this._vm.$http.get('statistic');
+        commit(mutations.SET_STATISTIC, response.data);
+      } catch(e) {
+        throw new Error();
       }
     }
   },

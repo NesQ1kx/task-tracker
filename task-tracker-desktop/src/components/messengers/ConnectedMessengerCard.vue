@@ -12,13 +12,30 @@
           Дата подключения: {{ messenger.connectDate | date }}
         </v-card-subtitle>
         <v-card-text>
-          <div v-if="isConnectedOnCurrentDevice" class="d-flex align-center">
-            <div style="width: 10px; height: 10px" class="success rounded-circle mr-3"></div>
+          <div v-if="isConnectedOnCurrentDevice" class="d-flex">
+            <div style="width: 5px; height: auto" class="success mr-3"></div>
             <div>Подключен на этом устройстве</div>
           </div>
-          <div v-else class="d-flex align-center">
-            <div style="width: 10px; height: 10px" class="error rounded-circle mr-3"></div>
-            <div>Требуется подключение на устройстве</div>
+          <div v-else class="d-flex">
+            <div style="width: 5px; height: auto" class="error mr-3"></div>
+            <div>Требуется подключение на устройстве
+              <v-tooltip right color="primary" small>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    color="primary"
+                    icon
+                    small
+                    v-bind="attrs"
+                    v-on="on"
+                    @click="onReconnectClick"
+                  >
+                    <v-icon x-small>mdi-connection</v-icon>
+                  </v-btn>
+                </template>
+                <span>Подключить на устройстве</span>
+              </v-tooltip>
+            </div>
+            
           </div>
         </v-card-text>
       </div>
@@ -64,6 +81,9 @@ export default {
   methods: {
     onRemoveClick() {
       this.$emit('remove:click', this.messenger);
+    },
+    onReconnectClick() {
+      this.$emit('connect-on-device:click', this.messenger);
     }
   }
 

@@ -1,13 +1,18 @@
 import { HttpService } from "@nestjs/axios";
 import { Injectable } from "@nestjs/common";
+import { CreateStatisticItemDto } from "src/dto/create-statistic-item.dto";
 import { ConnectTracker, CreateJiraIssue, CreateTrelloIssue, RemoveTracker, Tracker } from "src/utils/types";
+import { StatisticService } from "./statistic.service";
 import { UserService } from "./user.service";
 
 @Injectable()
 export class TrackerService {
   private TRELLO_API_LINK: string = 'https://api.trello.com/1/';
 
-  constructor(private userService: UserService, private httpService: HttpService) {}
+  constructor(
+    private userService: UserService,
+    private httpService: HttpService,
+    private statisticService: StatisticService) {}
 
   public async addTracker(payload: ConnectTracker): Promise<void> {
     await this.userService.addTracker(payload.userEmail, payload.tracker);
@@ -29,12 +34,11 @@ export class TrackerService {
   }
 
   public async createJiraIssue(payload: CreateJiraIssue): Promise<any> {
-    console.log(payload)
     const { attlasianEmail, apiToken, projectLink } = payload;
     const jiraLink = `${projectLink}rest/api/latest/issue`;
     const authHeader = `Basic ${Buffer.from(`${attlasianEmail}:${apiToken}`).toString('base64')}`;
 
-    return await this.httpService.post(jiraLink.toString(), {
+    await this.httpService.post(jiraLink.toString(), {
       fields: {
         project: {
           id: payload.projectId,
@@ -50,6 +54,7 @@ export class TrackerService {
         'Authorization': authHeader,
       }
     }).toPromise();
+    await this.createStatisticItem(payload.userEmail.toString(), 'Jira');
   }
 
   public async getTrelloBoards(payload: Tracker): Promise<any> {
@@ -63,6 +68,17 @@ export class TrackerService {
     const { apiToken, apiKey } = payload;
     const link = `${this.TRELLO_API_LINK}cards?key=${apiKey}&token=${apiToken}&name=${payload.taskName}&desc=${payload.description}&idList=${payload.listId}`;
 
-    return this.httpService.post(link).toPromise();
+    await this.httpService.post(link).toPromise();
+    await this.createStatisticItem(payload.userEmail.toString(), 'Trello');
+  }
+
+  private async createStatisticItem(userEmail: string, trackerName: string): Promise<void> {
+    const item: CreateStatisticItemDto = {
+      userEmail,
+      trackerName,
+      date: Date.now()
+    }
+
+    await this.statisticService.createStatisticItem(item);
   }
 }

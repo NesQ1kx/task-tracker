@@ -14,6 +14,7 @@ import { SignupConfirmDto } from 'src/dto/signup-confirm.dto';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 import { SigninUserDto } from 'src/dto/signin-user.dto';
 import { UpdateUserSettingsDto } from 'src/dto/update-user-settings.dto';
+import { ConfirmTwoFaDto } from 'src/dto/confirm-twofa.dto';
 
 @Controller('/api/v1/auth')
 export class AuthContrloller {
@@ -33,8 +34,8 @@ export class AuthContrloller {
     @Body() signinUserDto: SigninUserDto,
     @Res() response: Response,
   ): Promise<void> {
-    const { authToken } = await this.authService.signin(signinUserDto);
-    response.json({ authToken });
+    const res = await this.authService.signin(signinUserDto);
+    response.json(res);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -71,9 +72,34 @@ export class AuthContrloller {
     @Res() res: Response,
     @Body() updateUserSettingsDto: UpdateUserSettingsDto
   ): Promise<void> {
-    const authToken = request.headers.authorization.split('Bearer ')[1];
-    const response = await this.authService.updateUserSettings(authToken.trim(), updateUserSettingsDto);
+    const authToken = request.headers.authorization.split('Bearer ')[1].trim();
+    const response = await this.authService.updateUserSettings(authToken, updateUserSettingsDto);
 
     res.json(response);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('two-fa-confirm')
+  public confirmTwoFa(
+    @Req() request: Request,
+    @Res() response: Response,
+    @Body() confirmTwoFaDto: ConfirmTwoFaDto
+  ): void {
+    const authToken = request.headers.authorization.split('Bearer ')[1].trim();
+    const res = this.authService.confirmTwoFa(confirmTwoFaDto.code, authToken);
+
+    response.json(res);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('two-fa-send')
+  public async sendTwoFacode(
+    @Req() request: Request,
+    @Res() response: Response,
+  ): Promise<void> {
+    const authToken = request.headers.authorization.split('Bearer ')[1].trim();
+    await this.authService.sendTwoFaCode(authToken);
+
+    response.send();
   }
 }

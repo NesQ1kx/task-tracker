@@ -4,6 +4,7 @@
       <div v-for="(item, index) in connectedMessengers" :key="index">
         <v-hover v-slot="{ hover }">
           <div
+            v-ripple
             class="tab white rounded-xl pa-4 elevation-2"
             :class="{ 'grey lighten-2': selectedMessenger && selectedMessenger.id === item.id, 'grey lighten-4': hover }"
             @click="onChangeMessenger(item)"
@@ -18,7 +19,16 @@
     </div>
     <div class="tabs-content-wrapper pb-10">
       <div class="tabs-content white rounded-xl elevation-2" v-if="selectedMessenger">
-          <div v-if="messagesToDisplay.length" class="messages-list pa-10">
+          <div class="search-input px-10 mt-2">
+            <v-text-field
+              dense
+              full-width
+              placeholder="Поиск в сообщениях"
+              prepend-inner-icon="mdi-magnify"
+              v-model="searchText"
+            ></v-text-field>
+          </div>
+          <div v-if="messagesToDisplay.length" class="messages-list px-10 pt-16">
             <transition-group name="list">
               <Message
                 :message="message"
@@ -58,9 +68,10 @@ export default {
   data() {
     return {
       selectedMessenger: null,
-      messagesToDisplay: [],
       selectedMessage: null,
-      selectedTracker: null
+      selectedTracker: null,
+      searchText: '',
+      isLoading: false,
     };
   },
   computed: {
@@ -68,25 +79,26 @@ export default {
       connectedMessengers: state => state.user.data.connectedMessengers,
       telegramMessages: state => state.messengers.telegram.messages,
     }),
+    messagesToDisplay() {
+      let messages = [];
+      switch (this.selectedMessenger.id) {
+        case 1:
+          messages = this.telegramMessages;
+          break;
+        case 2:
+          messages = []
+          break;
+      }
+      const temp = messages.filter(({ content }) => content.includes(this.searchText));
+      return temp;
+    }
   },
   mounted() {
     this.selectedMessenger = this.connectedMessengers[0];
-    this.setMessages();
   },
   methods: {
     onChangeMessenger(messenger) {
       this.selectedMessenger = messenger;
-      this.setMessages();
-    },
-    setMessages() {
-      switch (this.selectedMessenger.id) {
-        case 1:
-          this.messagesToDisplay = this.telegramMessages;
-          break;
-        case 2:
-          this.messagesToDisplay = []
-          break;
-      }
     },
     onSelectTracker(tracker, message) {
       this.selectedTracker = tracker;
@@ -98,7 +110,7 @@ export default {
         case 2:
           this.$refs.createTrelloIssueDialog.openDialog();
       }
-    }
+    },
   },
 
   components: {
@@ -138,6 +150,12 @@ export default {
         height: 100%;
         width: 100%;
         position: absolute;
+      }
+
+      .search-input {
+        position: absolute;
+        width: 100%;
+        z-index: 10;
       }
     }
 

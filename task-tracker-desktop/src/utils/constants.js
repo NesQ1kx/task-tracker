@@ -8,7 +8,7 @@ export const AVAILABLE_MESSENGERS = [
   {
     id: 2,
     name: "Whatsapp",
-    isAvailable: false,
+    isAvailable: true,
     connectComponentName: "ConnectWhatsapp"
   },
   {

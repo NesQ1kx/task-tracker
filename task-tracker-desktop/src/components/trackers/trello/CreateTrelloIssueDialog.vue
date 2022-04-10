@@ -144,6 +144,7 @@ export default {
   computed: {
     ...mapState({
       boards: state => state.trackers.trello.boards,
+      userData: state => state.user.data,
     }),
   },
   mounted() {
@@ -161,7 +162,6 @@ export default {
     },
 
     createIssue() {
-      console.log(this.selectedList);
       this.$refs.validationObserver.validate();
 
       this.$ws.emit('events', JSON.stringify({
@@ -170,6 +170,7 @@ export default {
           listId: this.selectedList.id,
           taskName: this.cardName,
           description: this.description,
+          userEmail: this.userData.email,
           ...this.tracker,
         }
       }));

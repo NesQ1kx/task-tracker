@@ -8,13 +8,16 @@ import ws from "./plugins/ws";
 import date from "./filters/date";
 import dateTime from "./filters/dateTime";
 import { telegramApi } from "@/mixins/telegramApi";
-
+import VueApexCharts from 'vue-apexcharts'
 
 Vue.config.productionTip = false;
 
 Vue.use(http);
 Vue.use(ws);
+Vue.use(VueApexCharts);
 Vue.mixin(telegramApi);
+
+Vue.component('apexchart', VueApexCharts);
 
 Vue.filter('date', date);
 Vue.filter('dateTime', dateTime);

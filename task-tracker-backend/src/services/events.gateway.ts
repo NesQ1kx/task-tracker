@@ -43,10 +43,9 @@ export class AppGateway {
     },
     [SocketEvents.CREATE_JIRA_ISSUE]: async (payload: CreateJiraIssue, client: Socket) => {
       try {
-        const res = await this.trackerService.createJiraIssue(payload);
+        await this.trackerService.createJiraIssue(payload);
         client.emit('events', JSON.stringify({
           event: SocketEvents.JIRA_ISSUE_CREATED,
-          payload: res.data,
         }))
       } catch (e) {
         console.log(e);
@@ -65,10 +64,9 @@ export class AppGateway {
     },
     [SocketEvents.CREATE_TRELLO_ISSUE]: async (payload: CreateTrelloIssue, client: Socket) => {
       try {
-        const res = await this.trackerService.createTrelloIssue(payload);
+        await this.trackerService.createTrelloIssue(payload);
         client.emit('events', JSON.stringify({
           event: SocketEvents.TRELLO_ISSUE_CREATED,
-          payload: res.data,
         }));
       } catch(e) {
         console.log(e);
