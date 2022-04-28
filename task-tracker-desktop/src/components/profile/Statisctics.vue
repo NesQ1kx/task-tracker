@@ -1,12 +1,22 @@
 <template>
   <div class="mt-5" v-if="statistic.length">
     <div class="statistic-container">
-      <div>
-        <apexchart type="area" height="350" :options="tasksToDateChart.chartOptions" :series="tasksToDateChart.series"></apexchart>
-      </div>
-      <div class="d-flex justify-center mt-3">
-        <apexchart type="pie" width="400" :options="tasksByTracker.chartOptions" :series="tasksByTracker.series"></apexchart>
-      </div>
+      <v-carousel
+        :hide-delimiters="true"
+      >
+        <v-carousel-item>
+          <div>
+            <apexchart type="area" height="350" :options="tasksToDateChart.chartOptions" :series="tasksToDateChart.series"></apexchart>
+          </div>
+        </v-carousel-item>
+        <v-carousel-item>
+          <div class="d-flex justify-center mt-3">
+            <apexchart type="pie" width="400" :options="tasksByTracker.chartOptions" :series="tasksByTracker.series"></apexchart>
+          </div>    
+        </v-carousel-item>
+      </v-carousel>
+      
+      
     </div>
   </div>
 </template>
@@ -126,8 +136,4 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.statistic-container  {
-  max-height: 450px;
-  overflow-y: scroll;
-}
 </style>
